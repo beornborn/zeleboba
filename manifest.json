@@ -3,7 +3,7 @@
   "name": "Tinder Assistant",
   "version": "1.0",
   "description": "Automate Tinder messages with LLMs",
-  "permissions": ["storage"],
+  "permissions": ["storage", "activeTab"],
   "action": {
     "default_icon": "assets/icon.png",
     "default_popup": "popup/popup.html"
@@ -11,7 +11,12 @@
   "content_scripts": [
     {
       "matches": ["https://*.tinder.com/*"],
-      "js": ["scripts/helpers.js", "scripts/actions.js", "scripts/content.js"]
+      "js": ["scripts/helpers.js", "scripts/actions.js", "scripts/content.js"],
+      "css": ["assets/styles.css"]
     }
-  ]
+  ],
+  "web_accessible_resources": [{
+      "resources": ["assets/styles.css"],
+      "matches": ["https://*.tinder.com/*"]
+    }]
 }

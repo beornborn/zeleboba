@@ -1,6 +1,7 @@
 const helpers = {
   sleep,
   findElementByText,
+  createHtmlFragment,
 };
 
 function sleep(min, max) {
@@ -15,6 +16,16 @@ function findElementByText(elements, text) {
       return elements[i];
     }
   }
+}
+
+function createHtmlFragment(htmlStr) {
+  const fragment = document.createDocumentFragment();
+  const div = document.createElement('div');
+  div.innerHTML = htmlStr;
+  while (div.firstChild) {
+    fragment.appendChild(div.firstChild);
+  }
+  return fragment;
 }
 
 const locationHelper = {
