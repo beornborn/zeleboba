@@ -1,12 +1,33 @@
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "startAutomation") {
-    console.log("asdasdadasd");
-    const buttons = document.querySelectorAll("button[type='button']");
-    const messagesButton = findElementByText(buttons, "Messages");
-    messagesButton.click();
-    // automateTinder();
+  if (request.action === 'startAutomation') {
+    automateTinder();
   }
 });
+
+function goToMessages() {
+  const buttons = document.querySelectorAll("button[type='button'][aria-selected='false']");
+  const messagesButton = findElementByText(buttons, 'Messages');
+  if (messagesButton) {
+    messagesButton.click();
+    console.log('clicked on messages button');
+  } else {
+    console.log('already on messages');
+  }
+}
+
+function goToSwipes() {
+  const profileLink = document.querySelector("a[title='My Profile']");
+  if (profileLink) {
+    profileLink.click();
+    console.log('clicked on profile link');
+  } else {
+    console.log('cannot find profile link');
+  }
+}
+
+function sleep(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
 
 function findElementByText(elements, text) {
   let found;
@@ -17,35 +38,22 @@ function findElementByText(elements, text) {
   }
 }
 
-// async function automateTinder() {
-//   const messagesButton = document.querySelector(
-//     'button[aria-controls="u-1543161646"][aria-selected="false"]'
-//   );
+async function automateTinder() {
+  goToMessages();
+  await sleep(1000);
+  goToConversation();
+  //   setTimeout(getConversationHistory, 2000);
+}
 
-//   // Check if the button is found
-//   if (messagesButton) {
-//     // Trigger a click event on the Messages button
-//     messagesButton.click();
-//     console.log('Clicked on the Messages button.');
-//   } else {
-//     console.error('Messages button not found.');
-//   }
-
-//   // Select the first message element within the messageList container
-//   const firstMessageElement = document.querySelector('.messageList li');
-
-//   // Check if the element is found
-//   if (firstMessageElement) {
-//     // Do something with the selected element (for example, log it to the console)
-//     console.log(firstMessageElement);
-//     firstMessageElement.firstChild.click();
-//   } else {
-//     console.log('First message element not found');
-//   }
-
-//   // Call the function to get the conversation history
-//   setTimeout(getConversationHistory, 2000);
-// }
+function goToConversation() {
+  const firstMessageElement = document.querySelector('.messageList li');
+  if (firstMessageElement) {
+    console.log('clicked on first conversation');
+    firstMessageElement.firstChild.click();
+  } else {
+    console.log('First message element not found');
+  }
+}
 
 // async function getConversationHistory() {
 //   const system_instruction = `You are a Gen-Z boy on tinder who is trying to impress the match by asking funny, witty, and romantic questions.
