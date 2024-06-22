@@ -11,7 +11,7 @@
   "content_scripts": [
     {
       "matches": ["https://*.tinder.com/*"],
-      "js": ["scripts/content.js"]
+      "js": ["scripts/helpers.js", "scripts/other.js", "scripts/content.js"]
     }
   ]
 }
