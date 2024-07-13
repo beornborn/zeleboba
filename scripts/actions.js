@@ -20,6 +20,14 @@ const buttonSelectors = {
       )
       ?.closest('button');
   },
+  messages: () => {
+    return document.querySelectorAll(
+      'button[class="focus-button-style Cur(p) Typs(button-2) D(f) Fxd(r) Px(8px)"]'
+    )[1];
+  },
+  firstConversation: () => {
+    return document.querySelector('.messageList li')?.firstChild;
+  },
 };
 
 const actions = {
@@ -27,13 +35,14 @@ const actions = {
     like: () => clickButton(buttonSelectors.like, 'LIKE'),
     dislike: () => clickButton(buttonSelectors.dislike, 'DISLIKE'),
     openGirlProfile: () => clickButton(buttonSelectors.openGirlProfile, 'OPEN GIRL PROFILE'),
+    messages: () => clickButton(buttonSelectors.messages, 'GO TO MESSAGES'),
+    firstConversation: () =>
+      clickButton(buttonSelectors.firstConversation, 'GO TO FIRST CONVERSATION'),
   },
   waitForGirl,
   goToMatching,
 
-  goToMessages,
   goToProfile,
-  goToConversation,
 };
 
 function clickButton(selector, buttonName) {
@@ -76,17 +85,6 @@ function goToMatching() {
 
 // ------------------------------------------------------------
 
-function goToMessages() {
-  const buttons = document.querySelectorAll("button[type='button'][aria-selected='false']");
-  const messagesButton = helpers.findElementByText(buttons, 'Messages');
-  if (messagesButton) {
-    messagesButton.click();
-    console.log('clicked on messages button');
-  } else {
-    console.log('already on messages');
-  }
-}
-
 function goToProfile() {
   const profileLink = document.querySelector("a[title='My Profile']");
   if (profileLink) {
@@ -103,15 +101,5 @@ function findElementByText(elements, text) {
     if (elements[i].textContent == text) {
       return elements[i];
     }
-  }
-}
-
-function goToConversation() {
-  const firstMessageElement = document.querySelector('.messageList li');
-  if (firstMessageElement) {
-    console.log('clicked on first conversation');
-    firstMessageElement.firstChild.click();
-  } else {
-    console.log('First message element not found');
   }
 }

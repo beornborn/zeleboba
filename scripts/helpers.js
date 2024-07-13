@@ -2,6 +2,7 @@ const helpers = {
   sleep,
   findElementByText,
   createHtmlFragment,
+  setMessageToTextArea,
   location: {
     isOnMatchesPage: () =>
       isOnPage('/app/matches') || (isOnPage('/app/recs') && !isOnPage('/app/recs/profile')),
@@ -10,6 +11,26 @@ const helpers = {
     isOnProfilePage: () => isOnPage('/app/profile'),
   },
 };
+
+function setMessageToTextArea(message) {
+  const openRequest = indexedDB.open('keyval-store');
+  openRequest.onsuccess = function () {
+    db = openRequest.result;
+    const objectStore = db.transaction(['keyval'], 'readwrite').objectStore('keyval');
+    const request = objectStore.get('persist::sendMessages');
+    request.onsuccess = (event) => {
+      const data = JSON.parse(event.target.result);
+      data.text[window.location.pathname.replace('/app/messages/', '')] = message;
+      const jsonData = JSON.stringify(data);
+      const request = objectStore.openCursor(IDBKeyRange.only('persist::sendMessages'));
+      request.onsuccess = () => {
+        const cursor = request.result;
+        const updateRequest = cursor.update(jsonData);
+        updateRequest.onsuccess = () => window.location.reload();
+      };
+    };
+  };
+}
 
 function sleep(min, max) {
   const sleepTime = min + Math.random() * (max - min);

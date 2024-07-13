@@ -1,46 +1,3 @@
-// async function getConversationHistory() {
-//   const system_instruction = `You are a Gen-Z boy on tinder who is trying to impress the match by asking funny, witty, and romantic questions.
-//     Be casual.
-//     Give Short responses.
-//     Ask the match their name and address them by their name.
-//     Have opinions.
-//     Respond mostly with the below questions and quips:
-//     'You are giving me main character energy',
-//     'I am a little Sus',
-//     'You are Based',
-//     'That’s Mid',
-//     'why are u a simp about this?',
-//     'ngl',
-//     'letsgoo'
-//     Do not ask all the questions at once. Always keep the conversation going.`;
-//   console.log(system_instruction);
-//   const conversationHistoryElement = document.querySelector(
-//     '[aria-label="Conversation history"]'
-//   );
-//   const messageList = [{ role: 'system', content: system_instruction }];
-//   var role = 'assistant';
-//   if (conversationHistoryElement) {
-//     const messages = conversationHistoryElement.querySelectorAll('.msgHelper');
-//     messages.forEach((message) => {
-//       const isReceiver = message.querySelector(
-//         '.Bgc\\(\\$c-ds-background-chat-bubble-receive\\)'
-//       );
-//       const timestamp = message.querySelector('time').getAttribute('datetime');
-//       const content = message.querySelector('.text').textContent.trim();
-//       role = 'assistant';
-//       if (isReceiver !== null && isReceiver !== undefined) {
-//         role = 'user';
-//       }
-//       messageList.push({ role, content });
-//     });
-//   }
-//   if (role === 'user') {
-//     message = await getGPTResponse(messageList);
-//     console.log(message);
-//     sendMessage(message);
-//   }
-// }
-
 // function sendMessage(message) {
 //   // Set dummy text in the textarea by placeholder
 //   const placeholderText = 'Type a message';
@@ -86,39 +43,4 @@
 // function getButtonByText() {
 //   const buttons = document.querySelectorAll(`button`);
 //   return buttons.length > 0 ? buttons[buttons.length - 1] : null;
-// }
-
-// async function getGPTResponse(messageList) {
-//   const apiKey = ''; // Replace with your actual OpenAI API key
-//   const apiUrl = 'https://api.openai.com/v1/chat/completions ';
-
-//   const headers = {
-//     'Content-Type': 'application/json',
-//     Authorization: `Bearer ${apiKey}`,
-//   };
-
-//   const data = {
-//     model: 'gpt-3.5-turbo',
-//     messages: messageList,
-//     temperature: 0.7,
-//   };
-
-//   try {
-//     const response = await fetch(apiUrl, {
-//       method: 'POST',
-//       headers: headers,
-//       body: JSON.stringify(data),
-//     });
-
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! Status: ${response.status}`);
-//     }
-
-//     const responseData = await response.json();
-//     const responseMessage = responseData.choices[0].message;
-//     console.log(responseMessage.content);
-//     return responseMessage.content;
-//   } catch (error) {
-//     console.error('Error making API request:', error);
-//   }
 // }
