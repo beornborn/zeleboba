@@ -6,59 +6,42 @@
 //   }
 // });
 
-const girlName = () => document.querySelector('.chatProfile h1')?.textContent || '';
-const girlDescription = () => document.querySelector('.chatProfile .BreakWord')?.textContent || '';
-
-const openers = [
-  `Ты знала, что в Древнем Египте мумии обвязывали пенис лентами, чтобы не возникло проблем со стояком в загробной жизни? Ну, вот я как это услышал, сразу решил тебе написать.`,
-  `Поистине необъяснимая склонность людей к взаимному притяжению... Как некогда венецианцы изобрели загадочную маску, чтобы скрыть свои мысли, так и здесь, мы все носим маски, светские и фальшивые.`,
+const persons = [
+  { value: 'me', text: 'Я' },
+  { value: 'pechorin', text: 'Печорин' },
+  { value: 'kazanova', text: 'Казанова' },
+  { value: 'tolya', text: 'Тотоля' },
+  { value: 'bydlo', text: 'Быдло' },
+  { value: 'onegin', text: 'Онегин' },
+];
+const languages = [
+  {
+    value: 'ru',
+    text: 'RU',
+    prompt: 'Отвечай на русском языке, это важно, пиши на русском!',
+    translate: 'переводи отправленный текст на русский язык',
+  },
+  {
+    value: 'ua',
+    text: 'UA',
+    prompt: 'Відповідай українською мовою, це важливо, пиши українською мовою',
+    translate: 'перекладай відправлений текст українською мовою',
+  },
+  {
+    value: 'us',
+    text: 'US',
+    prompt: 'Answer on English language, it is important, write on English',
+    translate: 'translate the sent text into English',
+  },
 ];
 
-const prompts = {
-  chat: `
-    Если задаешь вопрос, то задавай всегда не больше одного вопроса.
-    Тема вопроса всегда должна быть только одна.
-    Отвечай на русском языке.
-    Имя девушки с которой ты знакомишься: ${girlName()}.
-    Если имя девушки написано латинскими буквами, то используй транслитерацию.
-    Например, если имя девушки Kate, то пиши Катя. Или если Anna, то пиши Анна.
-  `,
-  modificators: `
-    Не будь сладким, приторным, навязчивым, стелющимся, шаблонным, тривиальным, скучным, занудным.
-    Не задавай вопросы. Никогда не задавай вопросы, это важно!
-    Не предлагай чем-то заняться.
-    Не называй себя.
-    Не говори комплименты.
-    С вероятностью 10% отвечай с упоминанием какого-то редкого исторического факта, но не называй никаких дат.
-    Не ставь кавычки вокруг сообщения.
-  `,
-  whatAreYouDoing: `Ты парень, использующий приложение Тиндер, чтобы познакомиться с девушкой.`,
-  me: `
-    Будь непринужденным, остроумным, высокомерным, дерзким, наглым, отстраненным.
-    Будь максимально необычным, оригинальным, уникальным, смелым.
-    Будь непризнанным гением, великим человеком.
-  `,
-  pechorin: `
-    Твой характер в точности соответствует характеру Печорина из романа "Герой нашего времени".
-    Все твои действия, ответы, вопросы, реакции должны быть в такими же, как у Печорина.
-  `,
-  kazanova: `
-    Твой характер в точности соответствует характеру Казановы из книги Джованни Джакомо Казановы "История моей грешной жизни".
-    Все твои действия, ответы, вопросы, реакции должны быть в такими же, как у Казановы.
-  `,
-  platon: `
-    Твой характер в точности соответствует характеру древнегреческого мыслителя Платона.
-    Все твои действия, ответы, вопросы, реакции должны быть в такими же, как у Платона.
-  `,
-  tolya: 'Ты маленькая миленькая морская свинка Толенька-Тотоля',
-};
-
-const messages = {
-  opener: `Напиши сообщение, чтобы начать знакомство.`,
-};
-
 function getConversationHistory() {
-  const messageList = [{ role: 'system', content: prompts['me']() }];
+  const cachedPerson = localStorage.getItem('zeleboba_person');
+  const systemMessage = `
+    ${prompts[cachedPerson]}
+    ${prompts.modificators()}
+  `;
+  const messageList = [{ role: 'system', content: systemMessage }];
   const messagesContainer = document.querySelector('div[aria-live="polite"][role="log"]');
   let role = '';
   if (messagesContainer) {
@@ -77,9 +60,10 @@ function getConversationHistory() {
 async function callGpt(model, mode) {
   console.log('callGpt');
   let messageList = [];
+  const options = {};
   if (mode === 'answer_my_question') {
     messageList = [
-      { role: 'system', content: prompts['tolya'] },
+      { role: 'system', content: prompts.empty },
       { role: 'user', content: document.getElementById('zeleboba_textarea').value },
     ];
   } else if (mode === 'conversation') {
@@ -89,20 +73,27 @@ async function callGpt(model, mode) {
     const prompt = `
       ${prompts.whatAreYouDoing}
       ${prompts[cachedPerson]}
-      ${prompts.modificators}
+      ${prompts.modificators()}
     `;
     messageList = [{ role: 'system', content: prompt }];
     messageList.push({
       role: 'user',
       content: messages.opener,
     });
+  } else if (mode === 'translate') {
+    const cachedLang = localStorage.getItem('zeleboba_lang');
+    const selectedLang = languages.find((lang) => lang.value === cachedLang);
+    const text = document.getElementById('zeleboba_textarea').value;
+    messageList = [{ role: 'system', content: selectedLang.translate }];
+    messageList.push({ role: 'user', content: text });
+    options['n'] = 1;
   }
   console.log(mode, messageList);
-  const gptResult = await getGPTResponse(model, messageList);
+  const gptResult = await getGPTResponse(model, messageList, options);
   initMessagingPanel(gptResult.choices, { cost: gptResult.cost });
 }
 
-async function getGPTResponse(model, messageList) {
+async function getGPTResponse(model, messageList, options = {}) {
   const apiKey = ''; // Replace with your actual OpenAI API key
   const apiUrl = 'https://api.openai.com/v1/chat/completions ';
 
@@ -125,8 +116,9 @@ async function getGPTResponse(model, messageList) {
   const data = {
     model,
     messages: messageList,
-    n: 2,
+    n: options['n'] || 2,
     temperature: 1,
+    max_tokens: 200,
   };
 
   try {
@@ -159,27 +151,9 @@ async function getGPTResponse(model, messageList) {
   }
 }
 
-async function startMessaging() {
-  console.log('startMessaging');
-  state = 'messaging';
-  initToolPanel();
-  actions.clickButton.messages();
-  await helpers.sleep(1000, 2000);
-  actions.clickButton.firstConversation();
-  await helpers.sleep(2000, 3000);
-  await getConversationHistory();
-  //   setTimeout(getConversationHistory, 2000);
-}
-
-async function stopMessaging() {
-  state = 'idle';
-  initToolPanel();
-  console.log('stop messaging');
-}
-
 async function startSwiping() {
   state = 'swiping';
-  initToolPanel();
+  initMessagingPanel([]);
   console.log('startSwiping');
   actions.goToMatching();
   while (state === 'swiping') {
@@ -191,7 +165,7 @@ async function startSwiping() {
 
 async function stopSwiping() {
   state = 'idle';
-  initToolPanel();
+  initMessagingPanel([]);
   console.log('stop swiping');
 }
 
@@ -225,29 +199,49 @@ function doubleClickGptMessage(event) {
 
 function initMessagingPanel(messages, metadata = {}) {
   document.getElementById('zeleboba_popup')?.remove();
-  console.log(metadata, 'metadata');
+  document.getElementById('zeleboba_hide_show_button')?.remove();
   const { cost } = metadata;
   const constTotal = cost?.total ? `<div class="metadata">Стоимость: ${cost.total}</div>` : '';
-  const persons = [
-    { value: 'me', text: 'Непревзойденный Я' },
-    { value: 'pechorin', text: 'Печорин' },
-    { value: 'kazanova', text: 'Казанова' },
-    { value: 'tolya', text: 'Тотоля' },
-    { value: 'platon', text: 'Платон' },
-  ];
   const cachedPerson = localStorage.getItem('zeleboba_person');
+  const cachedLang = localStorage.getItem('zeleboba_lang');
+  const shouldHideAll = localStorage.getItem('zeleboba_hide_all') === 'true';
+  const shouldHideTextarea = localStorage.getItem('zeleboba_hide_textarea') === 'true';
+
+  const visibilityStyle = shouldHideAll ? 'display: none;' : '';
+  const textareaStyle = shouldHideTextarea ? 'display: none;' : '';
+  const swipeButton =
+    state === 'swiping'
+      ? '<button class="zeleboba_button_gpt" id="zeleboba_stop_swipe">Stop</button>'
+      : '<button class="zeleboba_button_gpt" id="zeleboba_start_swipe">Swipe</button>';
   const messagingPanel = helpers.createHtmlFragment(
     `
-    <div id="zeleboba_popup">
-      <div id="zeleboba_popup_buttons">
+    <button id="zeleboba_hide_show_button">
+      All
+    </button>
+    <button id="textarea_hide_show_button">
+      Textarea
+    </button>
+    <div id="zeleboba_popup" style="${visibilityStyle}">
+      <div class="zeleboba_popup_buttons">
         <button class="zeleboba_button_gpt" id="gpt_3_5">GPT 3.5</button>
         <button class="zeleboba_button_gpt" id="gpt_4">GPT 4</button>
+        ${swipeButton}
         <select id="zeleboba_person_select">
           ${persons.map((personData) => {
             const selected = personData.value === cachedPerson ? 'selected' : '';
             return `<option value="${personData.value}" ${selected} >${personData.text}</option>`;
           })}
         </select>
+        <select id="zeleboba_lang_select">
+          ${languages.map((langData) => {
+            const selected = langData.value === cachedLang ? 'selected' : '';
+            return `<option value="${langData.value}" ${selected} >${langData.text}</option>`;
+          })}
+        </select>
+      </div>
+      <div class="zeleboba_popup_buttons">
+        <button id="zeleboba_opener_gpt_3_5">Opener 3.5</button>
+        <button id="zeleboba_opener_gpt_4">Opener 4</button>
       </div>
       <div id="zeleboba_popup_metadata">
         ${constTotal}
@@ -255,21 +249,48 @@ function initMessagingPanel(messages, metadata = {}) {
       <div id="zeleboba_popup_messages">
         ${messages.map((message) => `<div class="message">${message}</div>`).join('')}
       </div>
-      <div id="zeleboba_popup_input">
+      <div id="zeleboba_popup_input" style="${textareaStyle}">
         <textarea id="zeleboba_textarea"></textarea>
         <div id="textarea_buttons">
-          <button id="zeleboba_send_gpt_3_5">Отправить 3.5</button>
-          <button id="zeleboba_send_gpt_4">Отправить 4</button>
+          <button id="zeleboba_send_gpt_3_5">Send 3.5</button>
+          <button id="zeleboba_send_gpt_4">Send 4</button>
         </div>
         <div id="textarea_buttons">
-          <button id="zeleboba_opener_gpt_3_5">Открывашка 3.5</button>
-          <button id="zeleboba_opener_gpt_4">Открывашка 4</button>
+          <button id="zeleboba_translate_gpt_3_5">Translate 3.5</button>
+          <button id="zeleboba_translate_gpt_4">Translate 4</button>
         </div>
       </div>
     </div>
   `
   );
   document.body.insertBefore(messagingPanel, document.body.childNodes[0]);
+  document.querySelector('#zeleboba_hide_show_button').addEventListener(
+    'click',
+    () => {
+      const shouldHideAll = localStorage.getItem('zeleboba_hide_all') === 'true';
+      localStorage.setItem('zeleboba_hide_all', !shouldHideAll);
+      initMessagingPanel([]);
+    },
+    false
+  );
+  if (shouldHideAll) {
+    return;
+  }
+  document.querySelector('#textarea_hide_show_button').addEventListener(
+    'click',
+    () => {
+      const shouldHideTextarea = localStorage.getItem('zeleboba_hide_textarea') === 'true';
+      localStorage.setItem('zeleboba_hide_textarea', !shouldHideTextarea);
+      initMessagingPanel([]);
+    },
+    false
+  );
+  document
+    .getElementById('zeleboba_start_swipe')
+    ?.addEventListener('click', () => startSwiping(), false);
+  document
+    .getElementById('zeleboba_stop_swipe')
+    ?.addEventListener('click', () => stopSwiping(), false);
   document
     .querySelector('#gpt_3_5')
     .addEventListener('click', () => callGpt('gpt-3.5-turbo-0125', 'conversation'), false);
@@ -293,42 +314,25 @@ function initMessagingPanel(messages, metadata = {}) {
     .querySelector('#zeleboba_opener_gpt_4')
     .addEventListener('click', () => callGpt('gpt-4o-2024-05-13', 'opener'), false);
   document
+    .querySelector('#zeleboba_translate_gpt_3_5')
+    .addEventListener('click', () => callGpt('gpt-3.5-turbo-0125', 'translate'), false);
+  document
+    .querySelector('#zeleboba_translate_gpt_4')
+    .addEventListener('click', () => callGpt('gpt-4o-2024-05-13', 'translate'), false);
+  document
     .querySelector('#zeleboba_person_select')
     .addEventListener(
       'change',
       (e) => localStorage.setItem('zeleboba_person', e.target.value),
       false
     );
+  document
+    .querySelector('#zeleboba_lang_select')
+    .addEventListener(
+      'change',
+      (e) => localStorage.setItem('zeleboba_lang', e.target.value),
+      false
+    );
 }
 
-function initToolPanel() {
-  document.getElementById('zeleboba_container')?.remove();
-  document.querySelector('body').querySelector('div').style.height = 'calc(100% - 63px)';
-  console.log('initToolPanel', state);
-  const buttonsPanel = helpers.createHtmlFragment(
-    `
-    <div id="zeleboba_container">
-      ${state !== 'messaging' ? '<button id="startMessagingButton2">Start Messaging</button>' : ''}
-      ${state === 'messaging' ? '<button id="stopMessagingButton">Stop Messaging</button>' : ''}
-      ${state !== 'swiping' ? '<button id="startSwipingButton2">Start Swiping</button>' : ''}
-      ${state === 'swiping' ? '<button id="stopSwipingButton">Stop Swiping</button>' : ''}
-    </div>
-  `
-  );
-  document.body.insertBefore(buttonsPanel, document.body.childNodes[0]);
-
-  const messagingButton = document.getElementById('startMessagingButton2');
-  messagingButton?.addEventListener('click', () => startMessaging(), false);
-
-  const stopMessagingButton = document.getElementById('stopMessagingButton');
-  stopMessagingButton?.addEventListener('click', () => stopMessaging(), false);
-
-  const swipingButton = document.getElementById('startSwipingButton2');
-  swipingButton?.addEventListener('click', () => startSwiping(), false);
-
-  const stopSwipingButton = document.getElementById('stopSwipingButton');
-  stopSwipingButton?.addEventListener('click', () => stopSwiping(), false);
-}
-
-initToolPanel();
 initMessagingPanel([]);

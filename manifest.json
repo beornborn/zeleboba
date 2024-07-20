@@ -11,7 +11,7 @@
   "content_scripts": [
     {
       "matches": ["https://*.tinder.com/*"],
-      "js": ["scripts/globalState.js", "scripts/helpers.js", "scripts/actions.js", "scripts/content.js"],
+      "js": ["scripts/globalState.js", "scripts/helpers.js",  "scripts/prompts.js", "scripts/actions.js", "scripts/content.js"],
       "css": ["assets/styles.css"]
     }
   ],

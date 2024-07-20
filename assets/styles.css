@@ -1,29 +1,45 @@
-#zeleboba_container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  background-color: #ededed;
+#zeleboba_hide_show_button {
+  display: block;
+  position: absolute;
+  top: 77px;
+  right: 50px;
+  width: 200px;
+  padding: 10px;
+  font-weight: bold;
+  background-color: white;
+  color: #515151;
+  border: 1px solid #515151;
+  cursor: pointer;
+  z-index: 999;
 
-  button {
-    margin: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #f0f0f0;
-    border: 1px solid #c0c0c0;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #9e9e9e;
-    }
-    &:active {
-      background-color: #f70404;
-    }
+  &:hover {
+    background-color: #e0e0e0;
   }
 }
 
+#textarea_hide_show_button {
+  display: block;
+  position: absolute;
+  top: 77px;
+  right: 250px;
+  width: 100px;
+  padding: 10px;
+  font-weight: bold;
+  background-color: white;
+  color: #515151;
+  border: 1px solid #515151;
+  cursor: pointer;
+  z-index: 999;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+}
+
+
 #zeleboba_popup {
   position: absolute;
-  top: 50px;
+  top: 120px;
   right: 50px;
   opacity: 0.8;
   background-color: #333333;
@@ -35,15 +51,19 @@
   min-width: 500px;
   overflow: auto;
 
-  #zeleboba_popup_buttons {
+  .zeleboba_popup_buttons {
+    display: flex;
+    flex-direction: row;
+    margin: 15px;
+
     button {
-      margin: 15px;
       padding: 8px;
       min-width: 80px;
       border-radius: 2px;
       background-color: #000000;
       border: 1px solid #c0c0c0;
       cursor: pointer;
+      margin-right: 10px;
 
       &:hover {
         border-color: red;
@@ -51,6 +71,10 @@
       &:active {
         background-color: #111111;
       }
+    }
+
+    select {
+      margin-right: 10px;
     }
   }
 
@@ -86,16 +110,18 @@
   #zeleboba_popup_input {
     display: flex;
     flex-direction: column;
+    margin-bottom: 15px;
 
     #zeleboba_textarea {
       border-radius: 0px;
       background-color: #f0f0f0;
       border: 1px solid #c0c0c0;
       width: 100%;
-      margin-bottom: 15px;
+      margin-bottom: 0px;
       color: black;
       padding: 10px;
       opacity: 1;
+      min-height: 120px;
     }
     #textarea_buttons {
       display: flex;
@@ -103,7 +129,6 @@
 
       button {
         width: 100%;
-        margin-bottom: 15px;
         cursor: pointer;
         background-color: #f0f0f0;
         padding: 5px;

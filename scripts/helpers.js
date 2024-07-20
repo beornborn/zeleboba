@@ -1,5 +1,8 @@
 const helpers = {
   sleep,
+  girlName: () => document.querySelector('.chatProfile h1')?.textContent || '',
+  girlDescription: () => document.querySelector('.chatProfile .BreakWord')?.textContent || '',
+  rand: (arr) => arr[Math.floor(Math.random() * arr.length)],
   findElementByText,
   createHtmlFragment,
   setMessageToTextArea,
