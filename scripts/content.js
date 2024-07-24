@@ -47,7 +47,9 @@ function getConversationHistory() {
   if (messagesContainer) {
     const messages = messagesContainer.querySelectorAll('.msgHelper');
     messages.forEach((message) => {
-      const isBaba = message.querySelector('.Bgc\\(\\$c-ds-background-chat-bubble-receive\\)');
+      const isBaba =
+        message.querySelector('.Bgc\\(\\$c-ds-background-chat-bubble-receive\\)') ||
+        message.querySelector('.C\\(\\$c-ds-text-chat-bubble-receive\\)');
       const content = message.querySelector('.text').textContent.trim();
       role = 'assistant';
       role = isBaba ? 'user' : 'assistant';
@@ -58,7 +60,6 @@ function getConversationHistory() {
 }
 
 async function callGpt(model, mode) {
-  console.log('callGpt');
   let messageList = [];
   const options = {};
   if (mode === 'answer_my_question') {
