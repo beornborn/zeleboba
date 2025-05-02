@@ -13,6 +13,10 @@
       "matches": ["https://*.tinder.com/*"],
       "js": ["scripts/globalState.js", "scripts/helpers.js",  "scripts/prompts.js", "scripts/actions.js", "scripts/content.js"],
       "css": ["assets/styles.css"]
+    },
+    {
+      "matches": ["https://*.kurs.com.ua/*"],
+      "js": ["scripts/kurscomua.js"]
     }
   ],
   "web_accessible_resources": [{
